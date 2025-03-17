@@ -1,6 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 import re
+
+import pm4py
+from pm4py.objects.log.obj import EventLog, Trace, Event
+from pm4py.objects.conversion.log import converter as log_converter
+
 # Modifica dell'import per usare la nuova funzione
 from xes_post_analyzer import create_attack_script_finale
 
@@ -93,9 +98,14 @@ def show_attack_path(ip, attack_steps, post_data_list):
             path_header_frame.pack(fill="x", pady=3)
 
             # Etichetta per il path
-            path_label = ttk.Label(path_header_frame, text=f"Path {path_counter}:",
+            if path_counter==1:
+                path_label = ttk.Label(path_header_frame, text=f"Most Frequent Path:",
+                                       font=("Arial", 12, "bold"))
+                path_label.pack(side="left", anchor="w", padx=5)
+            else:
+                path_label = ttk.Label(path_header_frame, text=f"Path {path_counter}:",
                                    font=("Arial", 12, "bold"))
-            path_label.pack(side="left", anchor="w", padx=5)
+                path_label.pack(side="left", anchor="w", padx=5)
 
             # Pulsante ben visibile
             view_button = ttk.Button(
@@ -125,3 +135,48 @@ def show_attack_path(ip, attack_steps, post_data_list):
     paths_scrollable_frame.update_idletasks()
 
     root.mainloop()
+
+
+def create_dfg_from_path(attack_path):
+    """
+    Crea un Directly-Follows Graph (DFG) da una lista di attività.
+
+    Args:
+        attack_path (list): Lista ordinata di attività
+
+    Returns:
+        tuple: (dfg, start_activities, end_activities)
+    """
+    # Crea log direttamente da una lista di tracce
+    log = log_converter.apply([[act] for act in attack_path])
+
+    # Scopri il DFG
+    dfg, sa, ea = pm4py.discover_dfg(log)
+
+    return dfg, sa, ea
+
+
+def view_dfg_safe(attack_path):
+    """
+    Wrapper per visualizzare il DFG con gestione degli errori
+
+    Args:
+        attack_path (list): Lista ordinata di attività
+    """
+    try:
+        # Genera il DFG
+        dfg, sa, ea = create_dfg_from_path(attack_path)
+
+        # Visualizza il DFG
+        pm4py.view_dfg(dfg, sa, ea, format="pdf")
+
+    except Exception as e:
+        print(f"Errore nella generazione del DFG: {e}")
+        # Stampa un DFG manuale se necessario
+        manual_dfg = {
+            (attack_path[i], attack_path[i + 1]): 1
+            for i in range(len(attack_path) - 1)
+        }
+        print("DFG manuale:", manual_dfg)
+
+        # Se serve, puoi aggiungere qui la logica di fallback

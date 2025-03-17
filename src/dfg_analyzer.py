@@ -52,7 +52,7 @@ def analyze_dfg_paths(dfg, start_activities, end_activities):
     for (act1, act2), weight in dfg.items():
         G.add_edge(act1, act2, weight=weight)
 
-    costly_paths = []
+    result_paths = []
     for start in valid_starts:
         if start not in G:
             continue  # salto i nodi che non esistono nel grafo
@@ -62,9 +62,9 @@ def analyze_dfg_paths(dfg, start_activities, end_activities):
                 for path in paths:
                     cost = sum(dfg.get((path[i], path[i + 1]), 0)
                                for i in range(len(path) - 1))
-                    costly_paths.append((path, cost))
+                    result_paths.append((path, cost))
             except nx.NetworkXNoPath:
                 continue
 
-    costly_paths.sort(key=lambda x: x[1], reverse=True)
-    return costly_paths
+    result_paths.sort(key=lambda x: x[1], reverse=True)
+    return result_paths

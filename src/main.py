@@ -52,8 +52,12 @@ def main():
     print("\nStart activities:", sa)
     print("End activities:", ea)
 
+
+    # Commentare la linea di codice del selettore che non si desidera utilizzare
     # Analisi dei percorsi nel DFG, ordinati dal più al meno costoso
     paths = analyze_dfg_paths(dfg, sa, ea)
+    # Analisi solo del percorso più frequente
+    #paths=trova_percorso_piu_costoso(dfg, sa, ea)
 
     print(paths)
     post_data_list = parse_xes(log_path)
@@ -81,16 +85,15 @@ def main():
     print("\n🚀 Script generato:")
     print(script)
 
+    #Parsing dei path da mandare alla gui
     paths_new=[]
     for path in paths:
         attack_path = extract_attack_path_from_tuple(path)
         paths_new.append(attack_path)
 
-    print(paths_new)
-    path_costoso=trova_percorso_piu_costoso(paths)
-    print(path_costoso)
 
-    # Avvio dell'interfaccia grafica se abbiamo trovato sia l'IP che i percorsi
+
+    # Avvio dell'interfaccia grafica se abbiamo trovato sia l'IP che i percorsi ora leggibili
     if result and paths:
         show_attack_path(result['attacked_ip'], paths_new,post_data_list)
     else:
