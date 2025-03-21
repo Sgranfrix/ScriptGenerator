@@ -18,7 +18,7 @@ def main():
     """Funzione principale che coordina l'esecuzione del programma."""
 
     # Percorso del file di log
-    log_path = '../xes_logs/captureProva.xes'
+    log_path = '../xes_logs/ccforms2_attack_and_checkers_complete.xes'
 
     # Analisi del file XES per trovare l'indirizzo IP attaccato
     result = analyze_xes_attack_logs(log_path)

@@ -3,6 +3,7 @@ from tkinter import ttk
 import re
 
 import pm4py
+from pm4py.visualization.dfg import visualizer as dfg_vis
 from pm4py.objects.log.obj import EventLog, Trace, Event
 from pm4py.objects.conversion.log import converter as log_converter
 
@@ -81,6 +82,31 @@ def show_attack_path(ip, attack_steps, post_data_list):
         script = create_attack_script_finale(ip, attack_path, post_data_list)
         script_text.delete(1.0, tk.END)
         script_text.insert(tk.END, script)
+        """
+            Genera un Directly-Follows Graph (DFG) utilizzando pm4py a partire da una lista di eventi.
+
+            :param attack_path: Lista ordinata di eventi rappresentanti un percorso di attacco.
+            """
+        if(len(attack_path)>1):
+            # Creazione delle coppie direttamente collegate
+            dfg = {}
+            for i in range(len(attack_path) - 1):
+                pair = (attack_path[i], attack_path[i + 1])
+                dfg[pair] = dfg.get(pair, 0) + 1  # Conta le occorrenze delle transizioni
+
+            # Visualizzazione del DFG
+            parameters = dfg_vis.Variants.FREQUENCY.value.Parameters
+            gviz = dfg_vis.apply(dfg, parameters={parameters.FORMAT: "png"})
+            dfg_vis.view(gviz)
+        else:
+            """Crea una finestrella di errore usando Tkinter."""
+            root = tk.Tk()
+            root.title("Errore")
+            label = ttk.Label(root, text="Impossibile creare un DFG con un solo elemento", foreground="red")
+            label.pack(padx=20, pady=10)
+            button = ttk.Button(root, text="OK", command=root.destroy)
+            button.pack(pady=10)
+            root.mainloop()
 
     # Aggiunta dei path
     path_counter = 1
@@ -137,46 +163,5 @@ def show_attack_path(ip, attack_steps, post_data_list):
     root.mainloop()
 
 
-def create_dfg_from_path(attack_path):
-    """
-    Crea un Directly-Follows Graph (DFG) da una lista di attività.
-
-    Args:
-        attack_path (list): Lista ordinata di attività
-
-    Returns:
-        tuple: (dfg, start_activities, end_activities)
-    """
-    # Crea log direttamente da una lista di tracce
-    log = log_converter.apply([[act] for act in attack_path])
-
-    # Scopri il DFG
-    dfg, sa, ea = pm4py.discover_dfg(log)
-
-    return dfg, sa, ea
 
 
-def view_dfg_safe(attack_path):
-    """
-    Wrapper per visualizzare il DFG con gestione degli errori
-
-    Args:
-        attack_path (list): Lista ordinata di attività
-    """
-    try:
-        # Genera il DFG
-        dfg, sa, ea = create_dfg_from_path(attack_path)
-
-        # Visualizza il DFG
-        pm4py.view_dfg(dfg, sa, ea, format="pdf")
-
-    except Exception as e:
-        print(f"Errore nella generazione del DFG: {e}")
-        # Stampa un DFG manuale se necessario
-        manual_dfg = {
-            (attack_path[i], attack_path[i + 1]): 1
-            for i in range(len(attack_path) - 1)
-        }
-        print("DFG manuale:", manual_dfg)
-
-        # Se serve, puoi aggiungere qui la logica di fallback
