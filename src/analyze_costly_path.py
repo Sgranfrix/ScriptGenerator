@@ -1,9 +1,9 @@
 import networkx as nx
 
 
-def trova_percorso_piu_costoso(dfg,start_activities,end_activities):
+def trova_percorso_piu_costoso(dfg, start_activities, end_activities):
     """
-    Trova il percorso con il costo più alto.
+    Trova il percorso con il costo più alto che contiene almeno una richiesta FLAG_OUT o FLAG_IN.
 
     Args:
         dfg (dict): Dictionary che rappresenta il DFG con pesi
@@ -11,7 +11,7 @@ def trova_percorso_piu_costoso(dfg,start_activities,end_activities):
         end_activities (dict/set): Attività finali
 
     Returns:
-        La tupla (percorso, costo) con il costo più alto
+        La tupla (percorso, costo) con il costo più alto che rappresenta un attacco
     """
 
     dfg_activities = set()
@@ -56,11 +56,16 @@ def trova_percorso_piu_costoso(dfg,start_activities,end_activities):
             try:
                 paths = nx.all_simple_paths(G, start, end)
                 for path in paths:
-                    cost = sum(dfg.get((path[i], path[i + 1]), 0)
-                               for i in range(len(path) - 1))
-                    costly_paths.append((path, cost))
+                    # Verifica se il percorso contiene almeno un'attività contrassegnata come FLAG_OUT o FLAG_IN
+                    attack_found = any('FLAG_OUT' in activity or 'FLAG_IN' in activity for activity in path)
+
+                    # Aggiungi alla lista solo se rappresenta un attacco
+                    if attack_found:
+                        cost = sum(dfg.get((path[i], path[i + 1]), 0)
+                                   for i in range(len(path) - 1))
+                        costly_paths.append((path, cost))
             except nx.NetworkXNoPath:
                 continue
 
     costly_paths.sort(key=lambda x: x[1], reverse=True)
-    return costly_paths[:1]
+    return costly_paths[:1] if costly_paths else []  # Restituisco la lista completa o lista vuota se non ci sono percorsi di attacco
