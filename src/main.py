@@ -55,9 +55,9 @@ def main():
 
     # Commentare la linea di codice del selettore che non si desidera utilizzare
     # Analisi dei percorsi nel DFG, ordinati dal più al meno costoso
-    paths = analyze_dfg_paths(dfg, sa, ea)
+    #paths = analyze_dfg_paths(dfg, sa, ea)
     # Analisi solo del percorso più frequente
-    #paths=trova_percorso_piu_costoso(dfg, sa, ea)
+    paths=trova_percorso_piu_costoso(dfg, sa, ea)
 
     print(paths)
     post_data_list = parse_xes(log_path)

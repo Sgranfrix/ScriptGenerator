@@ -57,7 +57,7 @@ def trova_percorso_piu_costoso(dfg, start_activities, end_activities):
                 paths = nx.all_simple_paths(G, start, end)
                 for path in paths:
                     # Verifica se il percorso contiene almeno un'attività contrassegnata come FLAG_OUT o FLAG_IN
-                    attack_found = any('FLAG_OUT' in activity or 'FLAG_IN' in activity for activity in path)
+                    attack_found = any('FLAG_OUT' in activity  for activity in path)
 
                     # Aggiungi alla lista solo se rappresenta un attacco
                     if attack_found:
