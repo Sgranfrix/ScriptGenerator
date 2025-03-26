@@ -90,13 +90,40 @@ def show_attack_path(ip, attack_steps, post_data_list):
         if(len(attack_path)>1):
             # Creazione delle coppie direttamente collegate
             dfg = {}
+
+            # Dizionari separati per contare le occorrenze delle attività iniziali e finali
+            start_activities = {}
+            end_activities = {}
+
+            # Aggiungi start ed end activities come nodi speciali
+            start_activity = attack_path[0]
+            end_activity = attack_path[-1]
+
+            # Aggiungi le transizioni originali
             for i in range(len(attack_path) - 1):
                 pair = (attack_path[i], attack_path[i + 1])
                 dfg[pair] = dfg.get(pair, 0) + 1  # Conta le occorrenze delle transizioni
 
+
+            # Definisci le attività iniziali e finali per la visualizzazione
+            start_activities["●"] = 1
+            end_activities["■"] = 1
+
+
+            # Conta la prima attività
+            start_activities[start_activity] = start_activities.get(start_activity, 0) + 1
+
+            # Conta l'ultima attività
+            end_activities[end_activity] = end_activities.get(end_activity, 0) + 1
+            # Parametri di visualizzazione
+            parameters = {
+                dfg_vis.Variants.FREQUENCY.value.Parameters.FORMAT: "png",
+                dfg_vis.Variants.FREQUENCY.value.Parameters.START_ACTIVITIES: start_activities,
+                dfg_vis.Variants.FREQUENCY.value.Parameters.END_ACTIVITIES: end_activities
+            }
+
             # Visualizzazione del DFG
-            parameters = dfg_vis.Variants.FREQUENCY.value.Parameters
-            gviz = dfg_vis.apply(dfg, parameters={parameters.FORMAT: "png"})
+            gviz = dfg_vis.apply(dfg, parameters=parameters)
             dfg_vis.view(gviz)
         else:
             """Crea una finestrella di errore usando Tkinter."""
