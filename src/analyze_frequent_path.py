@@ -1,9 +1,9 @@
 import networkx as nx
 
 
-def trova_percorso_piu_costoso(dfg, start_activities, end_activities):
+def trova_percorso_piu_frequente(dfg, start_activities, end_activities):
     """
-    Trova il percorso con il costo più alto che contiene almeno una richiesta FLAG_OUT o FLAG_IN.
+    Trova il percorso con la frequenza più alta che contiene almeno una richiesta FLAG_OUT o FLAG_IN.
 
     Args:
         dfg (dict): Dictionary che rappresenta il DFG con pesi
@@ -11,7 +11,7 @@ def trova_percorso_piu_costoso(dfg, start_activities, end_activities):
         end_activities (dict/set): Attività finali
 
     Returns:
-        La tupla (percorso, costo) con il costo più alto che rappresenta un attacco
+        La tupla (percorso, frequenza) con la frequenza più alta che rappresenta un attacco
     """
 
     dfg_activities = set()
@@ -48,7 +48,7 @@ def trova_percorso_piu_costoso(dfg, start_activities, end_activities):
     for (act1, act2), weight in dfg.items():
         G.add_edge(act1, act2, weight=weight)
 
-    costly_paths = []
+    frequent_paths = []
     for start in valid_starts:
         if start not in G:
             continue  # salto i nodi che non esistono nel grafo
@@ -63,9 +63,9 @@ def trova_percorso_piu_costoso(dfg, start_activities, end_activities):
                     if attack_found:
                         cost = sum(dfg.get((path[i], path[i + 1]), 0)
                                    for i in range(len(path) - 1))
-                        costly_paths.append((path, cost))
+                        frequent_paths.append((path, cost))
             except nx.NetworkXNoPath:
                 continue
 
-    costly_paths.sort(key=lambda x: x[1], reverse=True)
-    return costly_paths[:1] if costly_paths else []  # Restituisco la lista completa o lista vuota se non ci sono percorsi di attacco
+    frequent_paths.sort(key=lambda x: x[1], reverse=True)
+    return frequent_paths[:1] if frequent_paths else []  # Restituisco la lista completa o lista vuota se non ci sono percorsi di attacco

@@ -8,7 +8,7 @@ from collections import Counter
 
 def analyze_dfg_paths(dfg, start_activities, end_activities):
     """
-    Analizza il DFG e trova tutti i percorsi dalla start alla end activity, ordinandoli da più al meno costoso
+    Analizza il DFG e trova tutti i percorsi dalla start alla end activity, ordinandoli da più al meno frequente
 
     Args:
         dfg (dict): Dictionary che rappresenta il DFG con pesi
@@ -16,7 +16,7 @@ def analyze_dfg_paths(dfg, start_activities, end_activities):
         end_activities (dict/set): Attività finali
 
     Returns:
-        list: Lista di tuple (percorso, costo) ordinate per costo decrescente
+        list: Lista di tuple (percorso, frequenza) ordinate per frequenza decrescente
     """
     dfg_activities = set()
     for (act1, act2) in dfg:

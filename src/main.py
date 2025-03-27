@@ -7,7 +7,7 @@ import pm4py
 import os
 
 from dfg_analyzer import analyze_dfg_paths
-from src.analyze_costly_path import trova_percorso_piu_costoso
+from src.analyze_frequent_path import trova_percorso_piu_frequente
 from xes_analyzer import analyze_xes_attack_logs
 from attack_script_generator import create_attack_script
 from gui import show_attack_path
@@ -55,9 +55,9 @@ def main():
 
     # Commentare la linea di codice del selettore che non si desidera utilizzare
     # Analisi dei percorsi nel DFG, ordinati dal più al meno costoso
-    #paths = analyze_dfg_paths(dfg, sa, ea)
+    paths = analyze_dfg_paths(dfg, sa, ea)
     # Analisi solo del percorso più frequente
-    paths=trova_percorso_piu_costoso(dfg, sa, ea)
+    #paths=trova_percorso_piu_frequente(dfg, sa, ea)
 
     print(paths)
     post_data_list = parse_xes(log_path)
